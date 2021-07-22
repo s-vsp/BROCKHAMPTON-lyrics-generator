@@ -7,6 +7,15 @@ from tensorflow import keras
 
 
 
+def create_samples(text_sequence):
+    # Creating data samples with corresponding targets
+
+    X = text_sequence[:-1]
+    y = text_sequence[1:]
+    # X, y should have the same shape
+
+    return X, y
+
 
 def run():
 
@@ -24,15 +33,18 @@ def run():
     lyrics_as_ints = char2int(tf.strings.unicode_split(input=lyrics_text, input_encoding="UTF-8"))
     
     # Creating tf Dataset
-    lyrics_data = tf.data.Dataset.from_tensor_slices(lyrics_as_ints)
+    dataset = tf.data.Dataset.from_tensor_slices(lyrics_as_ints)
     
     # Creating bathces of data
     seq_len = 100
-    text_sequence = lyrics_data.batch(batch_size=seq_len+1, drop_remainder=True)
+    text_sequences = dataset.batch(batch_size=seq_len+1, drop_remainder=True)
 
-    for sequence in text_sequence.take(1):
-        # taking one batch, should return a tensor of shape (seq_len+1,)
-        print(tf.strings.reduce_join(int2char(sequence)).numpy())
+    # Creating data sort of dataframe (X,y) - paired
+    lyrics_data = text_sequences.map(create_samples)
+    lyrics_data = (lyrics_data.shuffle(buffer_size=1000).batch(batch_size=64, drop_remainder=True).prefetch(tf.data.experimental.AUTOTUNE))
+    print(f"Lyrics data defined as: \n{lyrics_data}")
+    print(len(vocabulary))
+
 
 
 

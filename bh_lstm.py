@@ -4,8 +4,7 @@ import os
 import sys
 import tensorflow as tf
 from tensorflow import keras
-from tensorflow.keras.layers import Embedding, LSTM, Dense, GRU
-from tensorflow.compat.v1 import enable_eager_execution
+from tensorflow.keras.layers import Embedding, LSTM, Dense
 
 
 

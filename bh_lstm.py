@@ -1,11 +1,14 @@
 import numpy as np
 import pandas as pd
 import os
+import h5py
 import sys
+import datetime
 import tensorflow as tf
 from tensorflow import keras
-from tensorflow.keras.layers import Embedding, LSTM, Dense
-
+from tensorflow.keras.layers import Embedding, LSTM, Dense, Activation
+from tensorflow.keras.losses import SparseCategoricalCrossentropy
+from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
 
 
 def create_samples(text_sequence):
@@ -38,6 +41,7 @@ class LSTM_RNN(keras.Model):
         self.embedding = Embedding(vocabulary_size, embedding_dimension)
         self.lstm = LSTM(rnn_units, activation="tanh", return_sequences=True, return_state=True, unit_forget_bias=True)
         self.dense = Dense(vocabulary_size)
+        self.activation = Activation(keras.activations.softmax)
 
     def call(self, inputs, memory_states=None, return_state=False, training=False):
         x = inputs
@@ -48,6 +52,7 @@ class LSTM_RNN(keras.Model):
     
         x, memory_states, carry_states = self.lstm(x, initial_state=memory_states, training=training)
         x = self.dense(x, training=training)
+        x = self.activation(x, training=training)
 
         if return_state==True:
             return x, memory_states
@@ -76,21 +81,49 @@ def run():
     dataset = tf.data.Dataset.from_tensor_slices(lyrics_as_ints)
     
     # Creating bathces of data
-    seq_len = 100
-    text_sequences = dataset.batch(batch_size=seq_len+1, drop_remainder=True)
+    SEQUENCE_LENGTH = 100
+    text_sequences = dataset.batch(batch_size=SEQUENCE_LENGTH+1, drop_remainder=True)
 
     # Creating data sort of dataframe (X,y) - paired
-    batch_size=64
-    buffer_size=1000
+    BATCH_SIZE = 64
+    BUFFER_SIZE = 1000
 
     lyrics_data = text_sequences.map(create_samples)
-    lyrics_data = (lyrics_data.shuffle(buffer_size=buffer_size).batch(batch_size=batch_size, drop_remainder=True).prefetch(tf.data.experimental.AUTOTUNE))
+    lyrics_data = (lyrics_data.shuffle(buffer_size=BUFFER_SIZE).batch(batch_size=BATCH_SIZE, drop_remainder=True).prefetch(tf.data.experimental.AUTOTUNE))
     #print(f"Lyrics data defined as: \n{lyrics_data}")
 
-    model = LSTM_RNN(vocabulary_size=len(char2int.get_vocabulary()), embedding_dimension=256, rnn_units=1024)
-    model.build(input_shape=(batch_size, seq_len))
+
+
+    ###--- MODELING ---###
+
+    EMBEDDING_DIMENSION = 256
+    RNN_UNITS = 1024
+
+    model = LSTM_RNN(vocabulary_size=len(char2int.get_vocabulary()), embedding_dimension=EMBEDDING_DIMENSION, rnn_units=RNN_UNITS)
+    model.build(input_shape=(BATCH_SIZE, SEQUENCE_LENGTH))
 
     print(model.summary())
+
+    loss_fc = SparseCategoricalCrossentropy(from_logits=False, name="sparse_categorical_crossentropy")
+
+    model.compile(optimizer='adam', loss=loss_fc)
+
+    # Callback Function
+    #checkpoint_directory = "./training_LSTM_checkpoints"
+    #saver = "LSTM-RNN-model-weights-improvement-{epoch:03d}-{loss:.5f}-bigger.hdf5"
+    #checkpoint_prefix = os.path.join(checkpoint_directory, saver)
+
+    #checkpoint_callback = ModelCheckpoint(filepath=checkpoint_prefix, monitor="loss", verbose=1, mode="min", save_best_only=True)
+    #callbacks = [checkpoint_callback]
+
+    # TensorBoard configurations
+    log_dir = r"c:\Users\Kamil\My_repo\BROCKHAMPTON-lyrics-generator"
+    tensorboard_callbacks = TensorBoard(log_dir=log_dir, histogram_freq=1)
+
+    EPOCHS = 30
+
+    model.fit(lyrics_data, epochs=EPOCHS, callbacks=[tensorboard_callbacks])
+
 
 
 if __name__ == "__main__":

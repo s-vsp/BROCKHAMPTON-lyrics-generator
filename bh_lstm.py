@@ -117,10 +117,10 @@ def run():
     #callbacks = [checkpoint_callback]
 
     # TensorBoard configurations
-    log_dir = r"c:\Users\Kamil\My_repo\BROCKHAMPTON-lyrics-generator"
+    log_dir = r"c:\Users\Kamil\My_repo\BROCKHAMPTON-lyrics-generator\BROCKHAMPTON-lyrics-generator" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
     tensorboard_callbacks = TensorBoard(log_dir=log_dir, histogram_freq=1)
 
-    EPOCHS = 30
+    EPOCHS = 50
 
     model.fit(lyrics_data, epochs=EPOCHS, callbacks=[tensorboard_callbacks])
 

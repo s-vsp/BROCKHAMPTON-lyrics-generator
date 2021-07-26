@@ -9,7 +9,7 @@ from tensorflow import keras
 from tensorflow.keras.layers import Embedding, LSTM, Dense, Activation
 from tensorflow.keras.losses import SparseCategoricalCrossentropy
 from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
-
+from tensorflow.keras.optimizers import SGD
 
 def create_samples(text_sequence):
     # Creating data samples with corresponding targets
@@ -41,7 +41,6 @@ class LSTM_RNN(keras.Model):
         self.embedding = Embedding(vocabulary_size, embedding_dimension)
         self.lstm = LSTM(rnn_units, activation="tanh", return_sequences=True, return_state=True, unit_forget_bias=True)
         self.dense = Dense(vocabulary_size)
-        self.activation = Activation(keras.activations.softmax)
 
     def call(self, inputs, memory_states=None, return_state=False, training=False):
         x = inputs
@@ -52,7 +51,6 @@ class LSTM_RNN(keras.Model):
     
         x, memory_states, carry_states = self.lstm(x, initial_state=memory_states, training=training)
         x = self.dense(x, training=training)
-        x = self.activation(x, training=training)
 
         if return_state==True:
             return x, memory_states
@@ -105,24 +103,18 @@ def run():
     print(model.summary())
 
     loss_fc = SparseCategoricalCrossentropy(from_logits=False, name="sparse_categorical_crossentropy")
+    #sgd_opt = SGD(momentum=0.9)
 
-    model.compile(optimizer='adam', loss=loss_fc)
+    model.compile(optimizer="adam", loss=loss_fc)
 
-    # Callback Function
-    #checkpoint_directory = "./training_LSTM_checkpoints"
-    #saver = "LSTM-RNN-model-weights-improvement-{epoch:03d}-{loss:.5f}-bigger.hdf5"
-    #checkpoint_prefix = os.path.join(checkpoint_directory, saver)
-
-    #checkpoint_callback = ModelCheckpoint(filepath=checkpoint_prefix, monitor="loss", verbose=1, mode="min", save_best_only=True)
-    #callbacks = [checkpoint_callback]
-
-    # TensorBoard configurations
+    # TensorBoard callback configurations
     log_dir = r"c:\Users\Kamil\My_repo\BROCKHAMPTON-lyrics-generator\BROCKHAMPTON-lyrics-generator" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
     tensorboard_callbacks = TensorBoard(log_dir=log_dir, histogram_freq=1)
 
-    EPOCHS = 50
+    EPOCHS = 100
 
     model.fit(lyrics_data, epochs=EPOCHS, callbacks=[tensorboard_callbacks])
+
 
 
 

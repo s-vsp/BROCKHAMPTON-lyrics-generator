@@ -11,6 +11,8 @@ from tensorflow.keras.losses import SparseCategoricalCrossentropy
 from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
 from tensorflow.keras.optimizers import SGD
 
+
+
 def create_samples(text_sequence):
     # Creating data samples with corresponding targets
 
@@ -20,6 +22,29 @@ def create_samples(text_sequence):
 
     return X, y
 
+
+
+def get_title():
+
+    lyrics_text = open("BROCKHAMPTON.txt", "r", encoding="utf-8").read()
+
+    t = np.random.randint(1,len(lyrics_text),size=1)
+
+    ignorable = [" ", "\n", ".", ",", "[", "]", "(", ")"]
+
+    chars = []
+
+    for i, c in enumerate(lyrics_text[t.item():t.item()+20]):
+        chars.append(c)
+        if c in ignorable and i == 0:
+            continue
+        elif c in ignorable and i != 0:
+            chars.remove(c)
+            break
+    
+    title = ""
+
+    return print(title.join((chars)).upper())
 
 
 
@@ -94,16 +119,16 @@ def run():
 
     ###--- MODELING ---###
 
-    EMBEDDING_DIMENSION = 256
-    RNN_UNITS = 1024
+    EMBEDDING_DIMENSION = 64
+    RNN_UNITS = 256
 
     model = LSTM_RNN(vocabulary_size=len(char2int.get_vocabulary()), embedding_dimension=EMBEDDING_DIMENSION, rnn_units=RNN_UNITS)
     model.build(input_shape=(BATCH_SIZE, SEQUENCE_LENGTH))
 
     print(model.summary())
 
-    loss_fc = SparseCategoricalCrossentropy(from_logits=False, name="sparse_categorical_crossentropy")
-    #sgd_opt = SGD(momentum=0.9)
+    loss_fc = SparseCategoricalCrossentropy(from_logits=True, name="sparse_categorical_crossentropy")
+    #sgd_opt = SGD(momentum=0.9, learning_rate=0.005, nesterov=True)
 
     model.compile(optimizer="adam", loss=loss_fc)
 
@@ -111,7 +136,7 @@ def run():
     log_dir = r"c:\Users\Kamil\My_repo\BROCKHAMPTON-lyrics-generator\BROCKHAMPTON-lyrics-generator" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
     tensorboard_callbacks = TensorBoard(log_dir=log_dir, histogram_freq=1)
 
-    EPOCHS = 100
+    EPOCHS = 120
 
     model.fit(lyrics_data, epochs=EPOCHS, callbacks=[tensorboard_callbacks])
 

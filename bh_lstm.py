@@ -6,11 +6,28 @@ import sys
 import datetime
 import tensorflow as tf
 from tensorflow import keras
+from tensorflow._api.v2 import random
 from tensorflow.keras import models
 from tensorflow.keras.layers import Embedding, LSTM, Dense, Activation
 from tensorflow.keras.losses import SparseCategoricalCrossentropy
 from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
 from tensorflow.keras.optimizers import SGD
+from tensorflow.python.framework import cpp_shape_inference_pb2
+
+
+###--- GLOBALS ---###
+
+parent_path = "C:/Users/Kamil/My_repo/BROCKHAMPTON-lyrics-generator"
+
+lyrics_text = open("BROCKHAMPTON.txt", "r", encoding="utf-8").read()
+#print(len(lyrics_text))
+
+# Unique chars in lyrics file
+vocabulary = list(sorted(set(lyrics_text))) 
+
+# Mappings
+char2int = keras.layers.experimental.preprocessing.StringLookup(vocabulary=vocabulary, mask_token=None)
+int2char = keras.layers.experimental.preprocessing.StringLookup(vocabulary=char2int.get_vocabulary(), invert=True, mask_token=None)
 
 
 
@@ -45,7 +62,7 @@ def get_title():
     
     title = ""
 
-    return print(title.join((chars)).upper())
+    return title.join((chars)).upper()
 
 
 
@@ -121,7 +138,7 @@ class OneStepForecast(keras.Model):
         
     
 
-def run():
+def run_model():
 
     ###--- PREPROCESSING ---###
 
@@ -173,28 +190,50 @@ def run():
     log_dir = r"c:\Users\Kamil\My_repo\BROCKHAMPTON-lyrics-generator\BROCKHAMPTON-lyrics-generator" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
     tensorboard_callbacks = TensorBoard(log_dir=log_dir, histogram_freq=1)
 
-    EPOCHS = 130
+    EPOCHS = 170
 
     model.fit(lyrics_data, epochs=EPOCHS, callbacks=[tensorboard_callbacks])
+
+    return model
+
+
+
+def run_predict(model):
+
+    album_title = get_title()
+
+    path = os.path.join(parent_path, album_title)
+    os.mkdir(path)
 
     one_step_forecast_modeling = OneStepForecast(model, int2char, char2int, 1.0)
     memory_states = None
     carry_states = None
-    next_char = tf.constant(["[Verse 1: "])
-    result = [next_char]
 
-    # Generate 1500 chars
-    for nc in range(1500):
-        next_char, memory_states, carry_states = one_step_forecast_modeling.one_step_forecasting(next_char, memory_states=memory_states, carry_states=carry_states)
-        result.append(next_char)
+    # Generate 10 songs
+    for song, chars_num in enumerate(range(10), [1500, 1700, 2000, 2100, 2000, 1900, 2300, 2150, 1600, 2000]):
+        
+        if song % 2 == 0:
+            next_char = tf.constant(["[Intro: "])
+        else:
+            next_char = tf.constant(["[Verse 1: "])
+
+        result = [next_char]
+
+        # Generate 1500 chars
+        for cn in range(chars_num):
+            next_char, memory_states, carry_states = one_step_forecast_modeling.one_step_forecasting(next_char, memory_states=memory_states, carry_states=carry_states)
+            result.append(next_char)
     
-    result = tf.strings.join(result)
-    print('\n\n' + '_'*80)
-    print(result[0].numpy().decode('utf-8'))
-    print('\n\n' + '_'*80)
+        result = tf.strings.join(result)
+
+
+        print('\n\n' + '_'*80)
+        print(result[0].numpy().decode('utf-8'))
+        print('\n\n' + '_'*80)
+
+
 
 
 
 if __name__ == "__main__":
-    #run()
-    get_title()
+    model = run_model()

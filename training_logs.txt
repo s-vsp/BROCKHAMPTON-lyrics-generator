@@ -1,0 +1,2 @@
+tensorboard dev upload --logdir \
+    'c:\Users\Kamil\My_repo\BROCKHAMPTON-lyrics-generator\BROCKHAMPTON-lyrics-generator20210802-110857'

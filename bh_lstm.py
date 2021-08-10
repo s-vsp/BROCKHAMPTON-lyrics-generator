@@ -11,13 +11,14 @@ from tensorflow.keras import models
 from tensorflow.keras.layers import Embedding, LSTM, Dense, Activation
 from tensorflow.keras.losses import SparseCategoricalCrossentropy
 from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
-from tensorflow.keras.optimizers import SGD
+from tensorflow.keras.optimizers import SGD, Adam
 from tensorflow.python.framework import cpp_shape_inference_pb2
+from tensorflow.python.keras import activations
 
 
 ###--- GLOBALS ---###
 
-parent_path = "C:/Users/Kamil/My_repo/BROCKHAMPTON-lyrics-generator"
+parent_path = "C:\\Users\\Kamil\\My_repo\\BROCKHAMPTON-lyrics-generator"
 
 lyrics_text = open("BROCKHAMPTON.txt", "r", encoding="utf-8").read()
 #print(len(lyrics_text))
@@ -84,6 +85,7 @@ class LSTM_RNN(keras.Model):
         self.embedding = Embedding(vocabulary_size, embedding_dimension)
         self.lstm = LSTM(rnn_units, activation="tanh", return_sequences=True, return_state=True, unit_forget_bias=True)
         self.dense = Dense(vocabulary_size)
+        #self.softmax = Activation(activation="softmax")
 
     def call(self, inputs, memory_states=None, carry_states=None, return_state=False, training=False):
         x = inputs
@@ -94,6 +96,7 @@ class LSTM_RNN(keras.Model):
             
         x, memory_states, carry_states = self.lstm(x, initial_state=[memory_states, carry_states], training=training)
         x = self.dense(x, training=training)
+        #x = self.softmax(x, training=training)
 
         if return_state==True:
             return x, memory_states, carry_states
@@ -115,7 +118,7 @@ class OneStepForecast(keras.Model):
         # The reason for that is that StringLookup generates also an ["UNK"] char - we don't want to
         # generate it anyhow so we need to mask it
 
-        skip = tf.reshape(self.char2int(["[UNK"]), shape=(1,-1))
+        skip = tf.reshape(self.char2int(["[UNK]"]), shape=(1,-1))
         mask = tf.SparseTensor(indices=skip, values=[-float("inf")], dense_shape=[len(char2int.get_vocabulary())])
         self.mask = tf.sparse.to_dense(mask)
 
@@ -126,7 +129,7 @@ class OneStepForecast(keras.Model):
         prediction, memory_states, carry_states = self.model(inputs=input_ints, memory_states=memory_states, carry_states=carry_states, return_state=True)
 
         prediction = prediction[:, -1, :]
-        prediction = prediction/self.temperature
+        #prediction = prediction/self.temperature
         prediction = prediction + self.mask
 
         predicted_ints = tf.random.categorical(prediction, num_samples=1)
@@ -190,7 +193,7 @@ def run_model():
     log_dir = r"c:\Users\Kamil\My_repo\BROCKHAMPTON-lyrics-generator\BROCKHAMPTON-lyrics-generator" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
     tensorboard_callbacks = TensorBoard(log_dir=log_dir, histogram_freq=1)
 
-    EPOCHS = 170
+    EPOCHS = 3
 
     model.fit(lyrics_data, epochs=EPOCHS, callbacks=[tensorboard_callbacks])
 
@@ -198,42 +201,44 @@ def run_model():
 
 
 
-def run_predict(model):
+def run_generate_lyrics(model):
 
     album_title = get_title()
 
-    path = os.path.join(parent_path, album_title)
-    os.mkdir(path)
+    c_path = os.path.join(parent_path, album_title)
+    os.mkdir(c_path)
 
     one_step_forecast_modeling = OneStepForecast(model, int2char, char2int, 1.0)
     memory_states = None
     carry_states = None
 
     # Generate 10 songs
-    for song, chars_num in enumerate(range(10), [1500, 1700, 2000, 2100, 2000, 1900, 2300, 2150, 1600, 2000]):
+    for song, chars_num in enumerate([1500, 1700, 2000, 2100, 2000, 1900, 2300, 2150, 1600, 2000]):
         
         if song % 2 == 0:
             next_char = tf.constant(["[Intro: "])
         else:
             next_char = tf.constant(["[Verse 1: "])
 
-        result = [next_char]
+        lyrics = [next_char]
 
         # Generate 1500 chars
         for cn in range(chars_num):
             next_char, memory_states, carry_states = one_step_forecast_modeling.one_step_forecasting(next_char, memory_states=memory_states, carry_states=carry_states)
-            result.append(next_char)
-    
-        result = tf.strings.join(result)
+            lyrics.append(next_char)
 
+        lyrics = tf.strings.join(lyrics)
+        lyrics = lyrics[0].numpy().decode("UTF-8")
+        title = get_title() + ".txt"
 
-        print('\n\n' + '_'*80)
-        print(result[0].numpy().decode('utf-8'))
-        print('\n\n' + '_'*80)
+        new_path = os.path.join(c_path, title)
+        file = open(new_path, "w")
+        file.write(lyrics)
+        file.close()
 
-
-
+        #print(result[0].numpy().decode('utf-8'))
 
 
 if __name__ == "__main__":
     model = run_model()
+    run_generate_lyrics(model)

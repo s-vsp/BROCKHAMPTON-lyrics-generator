@@ -13,7 +13,7 @@ LSTM RNN approach to generate new Brockhampton songs.
 ## Idea <a name="Idea"></a>
 
 The main project idea was to generate lyrics using Long short-term memory recurrent neural network. Followed the TensorFlow tutorial [[1]](https://www.tensorflow.org/text/tutorials/text_generation) where Shakespeare's poems where generated based on GRU architecture I decided to perform a similar approach, but based on LSTM. LSTMs are genuinely described in Colah's blog [[2]](https://colah.github.io/posts/2015-08-Understanding-LSTMs/).
-The dataset includes lyrics from all the Brockhampton songs gathered from [genius.com](https://genius.com/) and included 207 651 chars.
+The dataset includes lyrics from all the Brockhampton songs gathered from [genius.com](https://genius.com/) and having 207 651 chars.
 
 ## Project <a name="Project"></a>
 

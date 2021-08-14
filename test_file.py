@@ -1,1 +1,7 @@
-lyrics_text = open("BROCKHAMPTON.txt", "r", encoding="ISO-8859-1").read()
+lyrics_text = open("BROCKHAMPTON.txt", "r", encoding="utf-8").read()
+#print(len(lyrics_text))
+
+# Unique chars in lyrics file
+vocabulary = list(sorted(set(lyrics_text))) 
+
+print(len(vocabulary))

@@ -8,7 +8,7 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow._api.v2 import random
 from tensorflow.keras import models
-from tensorflow.keras.layers import Embedding, LSTM, Dense, Activation
+from tensorflow.keras.layers import Embedding, LSTM, Dense, Activation, Dropout
 from tensorflow.keras.losses import SparseCategoricalCrossentropy
 from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
 from tensorflow.keras.optimizers import SGD, Adam
@@ -85,6 +85,7 @@ class LSTM_RNN(keras.Model):
         self.embedding = Embedding(vocabulary_size, embedding_dimension)
         self.lstm = LSTM(rnn_units, activation="tanh", return_sequences=True, return_state=True, unit_forget_bias=True)
         self.dense = Dense(vocabulary_size)
+        self.dropout = Dropout(0.2)
         #self.softmax = Activation(activation="softmax")
 
     def call(self, inputs, memory_states=None, carry_states=None, return_state=False, training=False):
@@ -97,6 +98,7 @@ class LSTM_RNN(keras.Model):
         x, memory_states, carry_states = self.lstm(x, initial_state=[memory_states, carry_states], training=training)
         x = self.dense(x, training=training)
         #x = self.softmax(x, training=training)
+        x = self.dropout(x, training=training)
 
         if return_state==True:
             return x, memory_states, carry_states
@@ -129,7 +131,7 @@ class OneStepForecast(keras.Model):
         prediction, memory_states, carry_states = self.model(inputs=input_ints, memory_states=memory_states, carry_states=carry_states, return_state=True)
 
         prediction = prediction[:, -1, :]
-        #prediction = prediction/self.temperature
+        prediction = prediction/self.temperature
         prediction = prediction + self.mask
 
         predicted_ints = tf.random.categorical(prediction, num_samples=1)
@@ -193,7 +195,7 @@ def run_model():
     log_dir = r"c:\Users\Kamil\My_repo\BROCKHAMPTON-lyrics-generator\BROCKHAMPTON-lyrics-generator" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
     tensorboard_callbacks = TensorBoard(log_dir=log_dir, histogram_freq=1)
 
-    EPOCHS = 3
+    EPOCHS = 200
 
     model.fit(lyrics_data, epochs=EPOCHS, callbacks=[tensorboard_callbacks])
 
@@ -208,7 +210,10 @@ def run_generate_lyrics(model):
     c_path = os.path.join(parent_path, album_title)
     os.mkdir(c_path)
 
-    one_step_forecast_modeling = OneStepForecast(model, int2char, char2int, 1.0)
+    one_step_forecast_modeling = OneStepForecast(model, int2char, char2int, temperature=0.7)
+
+    tf.saved_model.save(one_step_forecast_modeling, "ONE_STEP_FORECAST")
+
     memory_states = None
     carry_states = None
 

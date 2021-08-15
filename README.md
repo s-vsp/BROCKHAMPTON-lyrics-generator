@@ -26,7 +26,7 @@ During preprocessing the vocabulary from the loaded Brockhampton lyrics was crea
 ### Training
 
 Before training the model, the obvious thing to do was to build the whole network. It contains 4 layers: embedding layer, lstm layer, dense layer and dropout layer. During the first phases of this project, the dropout layer wasn't used and it yield to overfitting the net, that's why it is important to add it with a dropout value equal to 0.1 (or any other value lesser than 0.3 -> larger ones yield to poor loss/accuracy performance and weak predictions). Here we can see it's summary:
-![Model's summary](https://imgur.com/a/3UhiNJJ)
+![Model's summary](https://i.imgur.com/64mZI6i.png)
 
 
 ## References <a name="References"></a>

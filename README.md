@@ -23,7 +23,27 @@ The whole project can be divided into 3 parts: preprocessing, training and evalu
 
 During preprocessing the vocabulary from the loaded Brockhampton lyrics was created and included exactly 100 unique chars. Following that, 2 StringLookup mappings were generated - first one mapping chars into integers (char2int) and the second one mapping integers into chars (int2char). Lastly the data was transformed into TensorFlow dataset (from tensor slices) and proceeded as sequences made of 100 chars. Finally the data used for training the model was inputed in form of pairs -> (input [X], target [y]), both having the same shape, but formed the way that the input is the current char and target is the next char, e.g. X = [Hell], y = [ello]. Data was shuffled, controlled by the BUFFER_SIZE parameter and inputed to the net as batches of size 64.
 
+### Training
 
+Before training the model, the obvious thing to do was to build the whole network. It contains 4 layers: embedding layer, lstm layer, dense layer and dropout layer. During the first phases of this project, the dropout layer wasn't used and it yield to overfitting the net, that's why it is important to add it with a dropout value equal to 0.1 (or any other value lesser than 0.3 -> larger ones yield to poor loss/accuracy performance and weak predictions). Here we can see it's summary:
+
+Model: "lstm_rnn"
+_______________________________________________________________
+Layer (type)                 Output Shape              Param #
+=================================================================
+embedding (Embedding)        multiple                  13184
+_______________________________________________________________
+lstm (LSTM)                  multiple                  1312768
+_______________________________________________________________
+dense (Dense)                multiple                  52839
+_______________________________________________________________
+dropout (Dropout)            multiple                  0
+=================================================================
+Total params: 1,378,791
+Trainable params: 1,378,791
+Non-trainable params: 0
+_______________________________________________________________
+None
 
 
 ## References <a name="References"></a>

@@ -1,4 +1,4 @@
-# BROCKHAMPTON lyrics generator
+# Brockhampton lyrics generator
 LSTM RNN approach to generate new Brockhampton songs.
 
 *Keywords: Deep Learning, RNN, LSTM, One-Step Forecasting, TensorFlow, Keras, Text Generation, Music Generation*

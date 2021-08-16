@@ -29,6 +29,7 @@ Before training the model, the obvious thing to do was to build the whole networ
 
 ![Model's summary](https://i.imgur.com/64mZI6i.png)
 
+### Evaluating
 
 ## References <a name="References"></a>
 - [1]. [Generate Text with RNNs](https://www.tensorflow.org/text/tutorials/text_generation)

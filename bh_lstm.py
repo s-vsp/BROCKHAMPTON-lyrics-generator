@@ -14,7 +14,6 @@ from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
 from tensorflow.keras.optimizers import SGD, Adam
 from tensorflow.python.framework import cpp_shape_inference_pb2
 from tensorflow.python.keras import activations
-from modeling import LSTM_RNN, OneStepForecast
 
 
 ###--- GLOBALS ---###

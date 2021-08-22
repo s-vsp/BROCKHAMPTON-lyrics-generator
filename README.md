@@ -29,6 +29,10 @@ Before training the model, the obvious thing to do was to build the whole networ
 
 ![Model's summary](https://i.imgur.com/64mZI6i.png)
 
+Training took place over 250 epochs and its performance was monitored using TensorBoard (loss and accuracy). Received scalars and the training process of this experiment are available on my [tensorboard.dev](https://tensorboard.dev/experiment/IBV7LyKQRxaal2ydVrmvRQ/#scalars) account. Here is a shot of the final results:
+
+![Scalars](https://imgur.com/a/Vhij9du)
+
 ### Evaluating
 
 ## References <a name="References"></a>

@@ -7,6 +7,8 @@ LSTM RNN approach to generate new Brockhampton songs.
 - [Idea](#Idea)
 - [Project](#Project)
   - [Preprocessing](#Preprocessing)
+  - [Training](#Training)
+  - [Evaluating](#Evaluating)
 - [References](#References)
 
 

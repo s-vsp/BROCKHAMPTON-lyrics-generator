@@ -23,21 +23,24 @@ The whole project can be divided into 3 parts: preprocessing, training and evalu
 
 ### Preprocessing <a name="Preprocessing"></a>
 
-During preprocessing the vocabulary from the loaded Brockhampton lyrics was created and included exactly 100 unique chars. Following that, 2 StringLookup mappings were generated - first one mapping chars into integers (char2int) and the second one mapping integers into chars (int2char). Lastly the data was transformed into TensorFlow dataset (from tensor slices) and proceeded as sequences made of 100 chars. Finally the data used for training the model was inputed in form of pairs -> (input [X], target [y]), both having the same shape, but formed the way that the input is the current char and target is the next char, e.g. X = [Hell], y = [ello]. Data was shuffled, controlled by the BUFFER_SIZE parameter and inputed to the net as batches of size 64.
+During preprocessing the vocabulary from the loaded Brockhampton lyrics was created and included exactly 100 unique chars. Following that, 2 StringLookup mappings were generated - first one mapping chars into integers (char2int) and the second one mapping integers into chars (int2char). Lastly the data was transformed into TensorFlow dataset (from tensor slices) and proceeded as sequences made of 50 chars. Finally the data used for training the model was inputed in form of pairs -> (input [X], target [y]), both having the same shape, but formed the way that the input is the current char and target is the next char, e.g. X = [Hell], y = [ello]. Data was shuffled, controlled by the BUFFER_SIZE parameter and inputed to the net as batches of size 64.
 
 ### Training
 
 Before training the model, the obvious thing to do was to build the whole network. It contains 3 layers: embedding layer, lstm layer and dense layer. During the first phases of this project dropout layer was used as well to prevent the model from overfitting. Nevertheless it yield to poor overall performance as overfitting was not a problem in this study. Here we can see model's summary:
 
-![Model's summary](https://i.imgur.com/64mZI6i.png)
+![Model's summary](https://i.imgur.com/o561Uxn.png)
 
-Training took place over 250 epochs and its performance was monitored using TensorBoard (loss and accuracy). Received scalars and the training process of this experiment are available on my [tensorboard.dev](https://tensorboard.dev/experiment/IBV7LyKQRxaal2ydVrmvRQ/#scalars) account. Here is a shot of the final results:
+Training took place over 250 epochs and its performance was monitored using TensorBoard (loss and accuracy). Final accuracy was equal to 0.9543 and loss equal to 0.1280 (250th epoch of learning).\
+Epoch 250/250\
+81/81 [==============================] - 41s 510ms/step - loss: 0.1280 - accuracy: 0.9543\
+Received scalars and the training process of this experiment are available on my [tensorboard.dev](https://tensorboard.dev/experiment/IVSeKcZgTgexe66frmiVsA/#scalars) account. Here is a shot of the final results:
 
-![Scalars](https://i.imgur.com/3W40FtG.png)
+![Scalars](https://i.imgur.com/hCy7gla.png)
 
 ### Evaluating
 
-Evaluating phase had two inside features. The first one was a function get_title() which simply generates titles (of the album and the songs). The second feature was a class OneStepForecasting(), which predicted chars at the next time step. Important that has to be mentioned on this point is a temperature hyperparameter. In simple words, modifying it changes model's confidence level in predicting the values -> smaller the temperature is, more confident the prediction is (and vice versa). To expand your knowledge about is, you can follow this short Medium article [[3]](https://medium.com/@majid.ghafouri/why-should-we-use-temperature-in-softmax-3709f4e0161) and Wikipedia article about a wider concept which is a softmax activation function itself [[4]](https://en.wikipedia.org/wiki/Softmax_function). In this study I tried different values of temperature, resulting in both, enlarging and reducing model's confidence. Surely, looking for the optimal value of it can be performed as a part of hyperparameter tuning (like grid search). Decided to go with a value of 0.8 (note, that the default value of it is set to be 1.0).
+Evaluating phase had two inside features. The first one was a function get_title() which simply generates titles (of the album and the songs). The second feature was a class OneStepForecasting(), which predicted chars at the next time step. Important that has to be mentioned on this point is a temperature hyperparameter. In simple words, modifying it changes model's confidence level in predicting the values -> smaller the temperature is, more confident the prediction is (and vice versa). To expand your knowledge about is, you can follow this short Medium article [[3]](https://medium.com/@majid.ghafouri/why-should-we-use-temperature-in-softmax-3709f4e0161) and Wikipedia article about a wider concept which is a softmax activation function itself [[4]](https://en.wikipedia.org/wiki/Softmax_function). In this study I tried different values of temperature, resulting in both, enlarging and reducing model's confidence. Surely, looking for the optimal value of it can be performed as a part of hyperparameter tuning (like grid search). Decided to go with a value of 1.2 (note, that the default value of it is set to be 1.0), it has actually 
 
 ## References <a name="References"></a>
 - [1]. [Generate Text with RNNs](https://www.tensorflow.org/text/tutorials/text_generation)

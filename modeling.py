@@ -12,6 +12,7 @@ from tensorflow.python.framework import cpp_shape_inference_pb2
 from tensorflow.python.keras import activations
 
 
+# model
 class LSTM_rnn(keras.Model):
 
     def __init__(self, vocabulary_size, embedding_dimension, rnn_units):
@@ -39,7 +40,7 @@ class LSTM_rnn(keras.Model):
         else:
             return x
 
-
+# predictor
 class OneStepForecast(keras.Model):
 
     def __init__(self, model, int2char, char2int, temperature=1.0):
@@ -73,4 +74,6 @@ class OneStepForecast(keras.Model):
         predicted_chars = self.int2char(predicted_ints)
 
         return predicted_chars, memory_states, carry_states
+
+
         

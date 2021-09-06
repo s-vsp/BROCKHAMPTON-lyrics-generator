@@ -31,12 +31,12 @@ Before training the model, the obvious thing to do was to build the whole networ
 
 ![Model's summary](https://i.imgur.com/o561Uxn.png)
 
-Training took place over 250 epochs and its performance was monitored using TensorBoard (loss and accuracy). Received scalars and the training process of this experiment are available on my [tensorboard.dev](https://tensorboard.dev/experiment/IVSeKcZgTgexe66frmiVsA/#scalars) account. Here is a shot of the final results:
-
-![Scalars](https://i.imgur.com/3W40FtG.png)
-
+Training took place over 250 epochs and its performance was monitored using TensorBoard (loss and accuracy). Final accuracy was equal to 0.9543 and loss equal to 0.1280 (250th epoch of learning).\
 Epoch 250/250\
-81/81 [==============================] - 41s 510ms/step - loss: 0.1280 - accuracy: 0.9543
+81/81 [==============================] - 41s 510ms/step - loss: 0.1280 - accuracy: 0.9543\
+Received scalars and the training process of this experiment are available on my [tensorboard.dev](https://tensorboard.dev/experiment/IVSeKcZgTgexe66frmiVsA/#scalars) account. Here is a shot of the final results:
+
+![Scalars](https://i.imgur.com/hCy7gla.png)
 
 ### Evaluating
 

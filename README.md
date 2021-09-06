@@ -35,6 +35,9 @@ Training took place over 250 epochs and its performance was monitored using Tens
 
 ![Scalars](https://i.imgur.com/3W40FtG.png)
 
+Epoch 250/250\
+81/81 [==============================] - 41s 510ms/step - loss: 0.1280 - accuracy: 0.9543
+
 ### Evaluating
 
 Evaluating phase had two inside features. The first one was a function get_title() which simply generates titles (of the album and the songs). The second feature was a class OneStepForecasting(), which predicted chars at the next time step. Important that has to be mentioned on this point is a temperature hyperparameter. In simple words, modifying it changes model's confidence level in predicting the values -> smaller the temperature is, more confident the prediction is (and vice versa). To expand your knowledge about is, you can follow this short Medium article [[3]](https://medium.com/@majid.ghafouri/why-should-we-use-temperature-in-softmax-3709f4e0161) and Wikipedia article about a wider concept which is a softmax activation function itself [[4]](https://en.wikipedia.org/wiki/Softmax_function). In this study I tried different values of temperature, resulting in both, enlarging and reducing model's confidence. Surely, looking for the optimal value of it can be performed as a part of hyperparameter tuning (like grid search). Decided to go with a value of 1.2 (note, that the default value of it is set to be 1.0), it has actually 

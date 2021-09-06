@@ -29,7 +29,7 @@ During preprocessing the vocabulary from the loaded Brockhampton lyrics was crea
 
 Before training the model, the obvious thing to do was to build the whole network. It contains 3 layers: embedding layer, lstm layer and dense layer. During the first phases of this project dropout layer was used as well to prevent the model from overfitting. Nevertheless it yield to poor overall performance as overfitting was not a problem in this study. Here we can see model's summary:
 
-![Model's summary](https://i.imgur.com/64mZI6i.png)
+![Model's summary](https://i.imgur.com/o561Uxn.png)
 
 Training took place over 250 epochs and its performance was monitored using TensorBoard (loss and accuracy). Received scalars and the training process of this experiment are available on my [tensorboard.dev](https://tensorboard.dev/experiment/IVSeKcZgTgexe66frmiVsA/#scalars) account. Here is a shot of the final results:
 

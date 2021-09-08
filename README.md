@@ -46,6 +46,8 @@ Evaluating phase had two inside features. The first one was a function get_title
 
 <img src="https://i.imgur.com/aBXMKo3.png" alt="Temperature tuning" width="800"/>
 
+The final model, with one step forecasting has been saved in [ONE_STEP_FORECAST_MODEL](https://github.com/s-vsp/Brockhampton-lyrics-generator/tree/main/ONE_STEP_FORECAST_MODEL) file and is easily accessible with this example line of code: `loaded_model = tf.saved_model.load('ONE_STEP_FORECAST_MODEL')`
+
 ## References <a name="References"></a>
 - [1]. [Generate Text with RNNs](https://www.tensorflow.org/text/tutorials/text_generation)
 - [2]. [LSTMs by Colah](https://colah.github.io/posts/2015-08-Understanding-LSTMs/)
